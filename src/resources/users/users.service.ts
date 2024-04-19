@@ -1,9 +1,9 @@
-import { eq, or } from 'drizzle-orm';
-import db from '../../drizzle';
-import { UserTable } from '../../drizzle/schema';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { exclude, hash } from '../../lib/utils';
+import { BinaryOperator, SQLWrapper, eq, or } from "drizzle-orm";
+import db from "../../drizzle";
+import { UserTable } from "../../drizzle/schema";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { exclude, hash } from "../../lib/utils";
 
 class UsersService {
   async create(user: CreateUserDto) {
@@ -16,17 +16,27 @@ class UsersService {
     return await db.select(cols).from(UserTable);
   }
 
-  async findOne(id: string) {
+  async findOne({
+    id,
+    email,
+    username,
+  }: {
+    id?: string;
+    email?: string;
+    username?: string;
+  }) {
     const cols = exclude(UserTable, [UserTable.password]);
-    return await db.select(cols).from(UserTable).where(eq(UserTable.id, id));
-  }
 
-  /* query build*/
-  async findOneByEmailOrUsername(email: string, username: string) {
+    const conditions: SQLWrapper[] = [];
+
+    if (id) conditions.push(eq(UserTable.id, id));
+    if (email) conditions.push(eq(UserTable.email, email));
+    if (username) conditions.push(eq(UserTable.username, username));
+
     return await db
-      .select()
+      .select(cols)
       .from(UserTable)
-      .where(or(eq(UserTable.username, username), eq(UserTable.email, email)));
+      .where(or(...conditions));
   }
 
   async update(id: string, user: UpdateUserDto) {
