@@ -1,72 +1,65 @@
-import type { Request, Response } from 'express';
-import postsService from './posts.service';
-import { createPostDto } from './dto/create-post.dto';
-import { updatePostDto } from './dto/update-post.dto';
-
-//cljeuoqdd8q7gqrnstyohhwkf
+import type { NextFunction, Request, Response } from "express";
+import postsService from "./posts.service";
+import { NotFoundError } from "../../lib/errors";
+import {
+  CreatePostSchema,
+  DeletePostSchema,
+  RetrievePostSchema,
+  UpdatePostSchema,
+} from "./posts.schema";
 
 class PostsController {
-  async createPost(req: Request, res: Response) {
-    const userId = req.body.userId;
-    if (!userId) return res.sendStatus(400);
+  async createPost(
+    req: Request<{}, {}, CreatePostSchema["body"]>,
+    res: Response
+  ) {
+    const { user, body } = req;
 
-    const body = createPostDto.safeParse(req.body);
-    if (!body.success) return res.sendStatus(400);
-
-    const newPost = await postsService.create(userId, body.data);
+    const newPost = await postsService.create(user.sub, body);
 
     res.status(201);
     res.json({ data: newPost });
   }
 
   async retrievePosts(req: Request, res: Response) {
-    const userId = req.body.userId;
-    if (!userId) return res.sendStatus(400);
+    const { user } = req;
 
-    const posts = await postsService.findAll(userId);
+    const posts = await postsService.findAll(user.sub);
 
     res.status(200);
     res.json({ data: posts });
   }
 
-  async retrievePost(req: Request, res: Response) {
-    const userId = req.body.userId;
-    if (!userId) return res.sendStatus(400);
+  async retrievePost(
+    req: Request<RetrievePostSchema["params"]>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { user, params } = req;
 
-    const postId = req.params.id;
-    if (!postId) return res.sendStatus(400);
-
-    const post = await postsService.findOne(userId, postId);
-    if (post.length === 0) return res.sendStatus(404);
+    const post = await postsService.findOne(user.sub, params.id);
+    if (post.length === 0) return next(new NotFoundError("Post not found"));
 
     res.status(200);
     res.json({ data: post });
   }
 
-  async updatePost(req: Request, res: Response) {
-    const userId = req.body.userId;
-    if (!userId) return res.sendStatus(400);
+  async updatePost(
+    req: Request<UpdatePostSchema["params"], {}, UpdatePostSchema["body"]>,
+    res: Response
+  ) {
+    const { user, params, body } = req;
 
-    const postId = req.params.id;
-    if (!postId) return res.sendStatus(400);
-
-    const body = updatePostDto.safeParse(req.body);
-    if (!body.success) return res.sendStatus(400);
-
-    const updatedPost = await postsService.update(userId, postId, body.data);
+    const updatedPost = await postsService.update(user.sub, params.id, body);
 
     res.status(200);
     res.json({ data: updatedPost });
   }
 
-  async deletePost(req: Request, res: Response) {
-    const userId = req.body.userId;
-    if (!userId) return res.sendStatus(400);
+  async deletePost(req: Request<DeletePostSchema["params"]>, res: Response) {
+    const { user, params } = req;
 
-    const postId = req.params.id;
-    if (!postId) return res.sendStatus(400);
-
-    const deletedPost = await postsService.remove(userId, postId);
+    const deletedPost = await postsService.remove(user.sub, params.id);
 
     res.status(200);
     res.json({ data: deletedPost });

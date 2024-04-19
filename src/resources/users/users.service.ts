@@ -1,37 +1,33 @@
-import { BinaryOperator, SQLWrapper, eq, or } from "drizzle-orm";
+import { SQLWrapper, eq, or } from "drizzle-orm";
 import db from "../../drizzle";
 import { UserTable } from "../../drizzle/schema";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { exclude, hash } from "../../lib/utils";
+import { exclude } from "../../lib/utils";
+import BcryptUtils from "../../lib/utils/bcrypt.util";
+import { CreateUserSchema, UpdateUserSchema } from "./user.schema";
 
 class UsersService {
-  async create(user: CreateUserDto) {
-    const cols = exclude(UserTable, [UserTable.password]);
+  async create(user: CreateUserSchema["body"]) {
+    const cols = exclude(UserTable, ["password", "updatedAt"]);
     return await db.insert(UserTable).values(user).returning(cols);
   }
 
   async findAll() {
-    const cols = exclude(UserTable, [UserTable.password]);
+    const cols = exclude(UserTable, ["password", "updatedAt"]);
     return await db.select(cols).from(UserTable);
   }
 
-  async findOne({
-    id,
-    email,
-    username,
-  }: {
-    id?: string;
-    email?: string;
-    username?: string;
-  }) {
-    const cols = exclude(UserTable, [UserTable.password]);
+  async findOne(
+    findBy: { id?: string; email?: string; username?: string },
+    colsToExclude: Array<keyof typeof UserTable._.columns> = []
+  ) {
+    const conditions: Array<SQLWrapper | undefined> = [];
 
-    const conditions: SQLWrapper[] = [];
-
+    const { id, email, username } = findBy;
     if (id) conditions.push(eq(UserTable.id, id));
     if (email) conditions.push(eq(UserTable.email, email));
     if (username) conditions.push(eq(UserTable.username, username));
+
+    const cols = exclude(UserTable, colsToExclude);
 
     return await db
       .select(cols)
@@ -39,11 +35,11 @@ class UsersService {
       .where(or(...conditions));
   }
 
-  async update(id: string, user: UpdateUserDto) {
-    const cols = exclude(UserTable, [UserTable.password]);
+  async update(id: string, user: UpdateUserSchema["body"]) {
+    const cols = exclude(UserTable, ["password", "updatedAt"]);
 
     if (user.password) {
-      const hashedPassword = await hash(user.password);
+      const hashedPassword = await BcryptUtils.hash(user.password);
       user.password = hashedPassword;
     }
 
@@ -55,7 +51,7 @@ class UsersService {
   }
 
   async remove(id: string) {
-    const cols = exclude(UserTable, [UserTable.password]);
+    const cols = exclude(UserTable, ["password", "updatedAt"]);
 
     return await db
       .delete(UserTable)

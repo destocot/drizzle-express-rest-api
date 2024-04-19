@@ -1,9 +1,18 @@
-import type { Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import usersService from "./users.service";
-import { updateUserDto } from "./dto/update-user.dto";
+import { NotFoundError } from "../../lib/errors";
+import {
+  CreateUserSchema,
+  DeleteUserSchema,
+  RetrieveUserSchema,
+  UpdateUserSchema,
+} from "./user.schema";
 
 class UsersController {
-  async createUser(req: Request, res: Response) {
+  async createUser(
+    req: Request<{}, {}, CreateUserSchema["body"]>,
+    res: Response
+  ) {
     res.redirect(307, "/api/auth/signup");
   }
 
@@ -14,35 +23,39 @@ class UsersController {
     res.json({ data: users });
   }
 
-  async retrieveUser(req: Request, res: Response) {
-    const userId = req.params.id;
-    if (!userId) return res.sendStatus(400);
+  async retrieveUser(
+    req: Request<RetrieveUserSchema["params"]>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { params } = req;
 
-    const user = await usersService.findOne({ id: userId });
-    if (user.length === 0) return res.sendStatus(404);
+    const user = await usersService.findOne({ id: params.id }, [
+      "password",
+      "updatedAt",
+    ]);
+    if (user.length === 0) return next(new NotFoundError("User not found"));
 
     res.status(200);
     res.json({ data: user });
   }
 
-  async updateUser(req: Request, res: Response) {
-    const userId = req.params.id;
-    if (!userId) return res.sendStatus(400);
+  async updateUser(
+    req: Request<UpdateUserSchema["params"], {}, UpdateUserSchema["body"]>,
+    res: Response
+  ) {
+    const { params, body } = req;
 
-    const body = updateUserDto.safeParse(req.body);
-    if (!body.success) return res.sendStatus(400);
-
-    const updatedUser = await usersService.update(userId, body.data);
+    const updatedUser = await usersService.update(params.id, body);
 
     res.status(200);
     res.json({ data: updatedUser });
   }
 
-  async deleteUser(req: Request, res: Response) {
-    const userId = req.params.id;
-    if (!userId) return res.sendStatus(400);
+  async deleteUser(req: Request<DeleteUserSchema["params"]>, res: Response) {
+    const { params } = req;
 
-    const deletedUser = await usersService.remove(userId);
+    const deletedUser = await usersService.remove(params.id);
 
     res.status(200);
     res.json({ data: deletedUser });

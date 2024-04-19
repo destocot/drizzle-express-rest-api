@@ -1,26 +1,40 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import authService from "./auth.service";
-import { signinUserDto } from "./dto/signin-user.dto";
-import { createUserDto } from "../users/dto/create-user.dto";
+import { CreateUserSchema } from "../users/user.schema";
+import { SigninSchema } from "./auth.schema";
 
 class AuthController {
-  async signup(req: Request, res: Response) {
-    const body = createUserDto.safeParse(req.body);
-    if (!body.success) return res.sendStatus(400);
+  async signup(
+    req: Request<{}, {}, CreateUserSchema["body"]>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { body } = req;
+    try {
+      const newUser = await authService.signup(body);
 
-    const newUser = await authService.signup(body.data);
-
-    res.status(201);
-    res.json({ data: newUser });
+      res.status(201);
+      res.json({ data: newUser });
+    } catch (err) {
+      next(err);
+    }
   }
 
-  signin(req: Request, res: Response) {
-    const body = signinUserDto.safeParse(req.body);
-    if (!body.success) return res.sendStatus(400);
+  async signin(
+    req: Request<{}, {}, SigninSchema["body"]>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { body } = req;
 
-    const x = authService.signin(body.data);
-
-    res.sendStatus(200);
+    try {
+      const userWithAccessToken = await authService.signin(body);
+      res.status(200);
+      res.setHeader("x-access-token", userWithAccessToken.accessToken);
+      res.json({ data: userWithAccessToken });
+    } catch (err) {
+      next(err);
+    }
   }
 
   signout(req: Request, res: Response) {

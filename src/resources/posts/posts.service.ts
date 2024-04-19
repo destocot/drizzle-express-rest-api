@@ -1,11 +1,10 @@
-import { and, eq, getTableColumns } from 'drizzle-orm';
-import db from '../../drizzle';
-import { PostTable, UserTable } from '../../drizzle/schema';
-import { CreatePostDto } from './dto/create-post.dto';
-import { UpdatePostDto } from './dto/update-post.dto';
+import { and, eq, getTableColumns } from "drizzle-orm";
+import db from "../../drizzle";
+import { PostTable, UserTable } from "../../drizzle/schema";
+import { CreatePostSchema, UpdatePostSchema } from "./posts.schema";
 
 class PostsService {
-  async create(userId: string, post: CreatePostDto) {
+  async create(userId: string, post: CreatePostSchema["body"]) {
     return await db
       .insert(PostTable)
       .values({ ...post, userId })
@@ -40,7 +39,7 @@ class PostsService {
       .leftJoin(UserTable, eq(PostTable.userId, UserTable.id));
   }
 
-  async update(userId: string, id: string, post: UpdatePostDto) {
+  async update(userId: string, id: string, post: UpdatePostSchema["body"]) {
     return await db
       .update(PostTable)
       .set(post)
