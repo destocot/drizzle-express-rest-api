@@ -1,0 +1,13 @@
+{
+  "version": "5",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1713475749364,
+      "tag": "0000_sad_sir_ram",
+      "breakpoints": true
+    }
+  ]
+}
