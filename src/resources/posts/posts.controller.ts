@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
-import postsService from "./posts.service";
-import { NotFoundError } from "../../lib/errors";
+import postsService from "@/resources/posts/posts.service";
+import { NotFoundError } from "@/lib/errors";
 import {
   CreatePostSchema,
   DeletePostSchema,
   RetrievePostSchema,
   UpdatePostSchema,
-} from "./posts.schema";
+} from "@/resources/posts/posts.schema";
 
 class PostsController {
   async createPost(

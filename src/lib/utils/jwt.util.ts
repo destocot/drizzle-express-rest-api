@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import config from "../config";
+import config from "@/lib/config";
 
 class JwtUtils {
   static sign(payload: string | object | Buffer) {

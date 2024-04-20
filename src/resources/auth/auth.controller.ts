@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import authService from "./auth.service";
-import { CreateUserSchema } from "../users/user.schema";
-import { SigninSchema } from "./auth.schema";
+import authService from "@/resources/auth/auth.service";
+import { CreateUserSchema } from "@/resources/users/user.schema";
+import { SigninSchema } from "@/resources/auth/auth.schema";
 
 class AuthController {
   async signup(

@@ -1,12 +1,12 @@
 import type { NextFunction, Request, Response } from "express";
-import usersService from "./users.service";
-import { NotFoundError } from "../../lib/errors";
+import usersService from "@/resources/users/users.service";
+import { NotFoundError } from "@/lib/errors";
 import {
   CreateUserSchema,
   DeleteUserSchema,
   RetrieveUserSchema,
   UpdateUserSchema,
-} from "./user.schema";
+} from "@/resources/users/user.schema";
 
 class UsersController {
   async createUser(

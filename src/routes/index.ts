@@ -1,10 +1,10 @@
 import { Router } from "express";
 
-import userRoutes from "../resources/users/users.route";
-import authRoutes from "../resources/auth/auth.route";
-import postRoutes from "../resources/posts/posts.route";
-import { authGuard } from "../middleware/auth-guard";
-import { NotFoundError } from "../lib/errors";
+import userRoutes from "@/resources/users/users.route";
+import authRoutes from "@/resources/auth/auth.route";
+import postRoutes from "@/resources/posts/posts.route";
+import { authGuard } from "@/middleware/auth-guard";
+import { NotFoundError } from "@/lib/errors";
 
 const router = Router();
 

@@ -1,6 +1,6 @@
 import z from "zod";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
-import { UserTable } from "../../drizzle/schema";
+import { UserTable } from "@/drizzle/schema";
 
 const createUserBody = {
   body: createInsertSchema(UserTable, {

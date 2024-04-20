@@ -1,9 +1,12 @@
 import { SQLWrapper, eq, or } from "drizzle-orm";
-import db from "../../drizzle";
-import { UserTable } from "../../drizzle/schema";
-import { exclude } from "../../lib/utils";
-import BcryptUtils from "../../lib/utils/bcrypt.util";
-import { CreateUserSchema, UpdateUserSchema } from "./user.schema";
+import db from "@/drizzle";
+import { UserTable } from "@/drizzle/schema";
+import { exclude } from "@/lib/utils";
+import BcryptUtils from "@/lib/utils/bcrypt.util";
+import {
+  CreateUserSchema,
+  UpdateUserSchema,
+} from "@/resources/users/user.schema";
 
 class UsersService {
   async create(user: CreateUserSchema["body"]) {

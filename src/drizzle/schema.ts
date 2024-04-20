@@ -1,7 +1,7 @@
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { sql } from "drizzle-orm";
 import { relations } from "drizzle-orm";
-import { cuid } from "../lib/utils";
+import { cuid } from "@/lib/utils";
 
 /* users */
 

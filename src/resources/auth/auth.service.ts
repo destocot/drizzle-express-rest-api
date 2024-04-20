@@ -1,10 +1,11 @@
-import { ConflictError, NotFoundError } from "../../lib/errors";
-import logger from "../../lib/logger";
-import BcryptUtils from "../../lib/utils/bcrypt.util";
-import JwtUtils from "../../lib/utils/jwt.util";
-import { CreateUserSchema } from "../users/user.schema";
-import usersService from "../users/users.service";
-import { SigninSchema } from "./auth.schema";
+import { ConflictError, NotFoundError } from "@/lib/errors";
+import logger from "@/lib/logger";
+import BcryptUtils from "@/lib/utils/bcrypt.util";
+import JwtUtils from "@/lib/utils/jwt.util";
+import { JwtPayload } from "@/types";
+import { CreateUserSchema } from "@/resources/users/user.schema";
+import usersService from "@/resources/users/users.service";
+import { SigninSchema } from "@/resources/auth/auth.schema";
 
 class AuthService {
   async signup(createUserDto: CreateUserSchema["body"]) {
@@ -44,7 +45,7 @@ class AuthService {
       throw new NotFoundError("Invalid Credentials");
     }
 
-    const accessToken = JwtUtils.sign({ sub: user.id });
+    const accessToken = JwtUtils.sign({ sub: user.id } satisfies JwtPayload);
     const { password, ...userWithoutPassword } = user;
 
     return { user: userWithoutPassword, accessToken };

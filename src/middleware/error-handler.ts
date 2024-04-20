@@ -1,7 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
-import logger from "../lib/logger";
-import { CustomError } from "../lib/errors/custom-error";
+import logger from "@/lib/logger";
+import { CustomError } from "@/lib/errors/custom-error";
 import { ZodError } from "zod";
+import { DrizzleError } from "drizzle-orm";
 
 export const errorHandler = (
   err: Error,
@@ -18,6 +19,11 @@ export const errorHandler = (
 
     return res.json({ error: { message, errors } });
   }
+
+  if (err instanceof DrizzleError) {
+    logger.debug(`THROWING INSTANCE OF DRIZZLE ERROR`);
+  }
+
   console.error(err);
 
   res.status(500);

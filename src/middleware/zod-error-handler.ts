@@ -1,7 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
-import logger from "../lib/logger";
+import logger from "@/lib/logger";
 import { ZodError } from "zod";
-import { BadRequestError } from "../lib/errors";
+import { BadRequestError } from "@/lib/errors";
 
 export const zodErrorHandler = (
   err: Error,

@@ -1,6 +1,6 @@
 import z from "zod";
 import { createInsertSchema } from "drizzle-zod";
-import { PostTable } from "../../drizzle/schema";
+import { PostTable } from "@/drizzle/schema";
 
 const createPostBody = {
   body: createInsertSchema(PostTable, {

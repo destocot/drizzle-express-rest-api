@@ -1,26 +1,23 @@
-import { createServer } from "node:http";
-import server from "./server";
-import logger from "./lib/logger";
-import config from "./lib/config";
-import { DrizzleError } from "drizzle-orm";
+import { Server, createServer } from "node:http";
+import server from "@/server";
+import logger from "@/lib/logger";
+import config from "@/lib/config";
+import { UnhandledExceptionHandlers } from "./lib/utils/error.utils";
 
 const port = config.PORT ?? 4000;
-const httpServer = createServer(server);
-httpServer.listen({ port }, () => {
-  logger.info(`Server listening on port ${port}`);
-});
+let httpServer: Server;
 
-process.on("unhandledRejection", (err: Error) => {
-  console.log(err);
-  logger.error("UNHANDLED REJECTION! 💥 Shutting down...");
-  process.exit(1);
-});
+const start = () => {
+  httpServer = createServer(server);
 
-process.on("uncaughtException", (err: Error) => {
-  console.log(err);
-  logger.error("UNHANDLED EXCEPTION! 💥 Shutting down...");
-  process.exit(1);
-});
+  httpServer.listen({ port }, () => {
+    logger.info(`Server listening on port ${port}`);
+  });
+};
+
+start();
+
+UnhandledExceptionHandlers.initalize();
 
 process.on("SIGTERM", () => {
   logger.info("🛑 Closing http server gracefully...");

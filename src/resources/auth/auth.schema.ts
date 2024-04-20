@@ -1,6 +1,6 @@
 import z from "zod";
 import { createSelectSchema } from "drizzle-zod";
-import { UserTable } from "../../drizzle/schema";
+import { UserTable } from "@/drizzle/schema";
 
 const signinBody = {
   body: createSelectSchema(UserTable, {

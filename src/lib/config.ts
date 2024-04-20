@@ -18,8 +18,8 @@ const config = {
 const parsedConfig = envSchema.safeParse(config);
 
 if (!parsedConfig.success) {
-  const error = parsedConfig.error.errors[0]?.message;
-  throw new Error(`Config validation error: ${error}`);
+  const error = parsedConfig.error.errors[0]?.path[0] ?? "";
+  throw new Error(`Missing environment variable ${error}`);
 }
 
 export default parsedConfig.data;

@@ -1,12 +1,12 @@
 import { Router } from "express";
-import usersController from "./users.controller";
-import { validateResource } from "../../middleware/validate-resource";
+import usersController from "@/resources/users/users.controller";
+import { validateResource } from "@/middleware/validate-resource";
 import {
   createUserSchema,
   deleteUserSchema,
   retrieveUserSchema,
   updateUserSchema,
-} from "./user.schema";
+} from "@/resources/users/user.schema";
 
 const router = Router();
 

@@ -1,5 +1,5 @@
-import morgan from 'morgan';
-import logger from '../lib/logger';
+import morgan from "morgan";
+import logger from "@/lib/logger";
 
 const stream = {
   write: (message: string) => {
@@ -8,7 +8,7 @@ const stream = {
 };
 
 const skip = () => {
-  return process.env.NODE_ENV !== 'development';
+  return process.env.NODE_ENV !== "development";
 };
 
-export default morgan('tiny', { stream, skip });
+export default morgan("tiny", { stream, skip });

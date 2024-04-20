@@ -1,7 +1,10 @@
 import { and, eq, getTableColumns } from "drizzle-orm";
-import db from "../../drizzle";
-import { PostTable, UserTable } from "../../drizzle/schema";
-import { CreatePostSchema, UpdatePostSchema } from "./posts.schema";
+import db from "@/drizzle";
+import { PostTable, UserTable } from "@/drizzle/schema";
+import {
+  CreatePostSchema,
+  UpdatePostSchema,
+} from "@/resources/posts/posts.schema";
 
 class PostsService {
   async create(userId: string, post: CreatePostSchema["body"]) {
